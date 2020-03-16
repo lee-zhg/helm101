@@ -1,99 +1,43 @@
-# Lab 4. I like sharing
+# Why Helm?
 
-A key aspect of providing an application means sharing with others. Sharing can be direct counsumption (by users or in CI/CD pipelines) or as a dependency for other charts. If people can't find your app then they can't use it.
+[Helm](https://docs.helm.sh/) is often described as the Kubernetes application package manager. So, what does Helm give you over using kubectl directly?
 
-A means of sharing is a chart repository, which is a location where packaged charts can be stored and shared. As the chart repository only applies to Helm, we will just look at the usage and storage of Helm charts.
+# Objectives
 
-# Using charts from a public repository
+These labs provide an insight on the advantages of using Helm over using Kubernetes directly through `kubectl`. When you complete all the labs, you'll:
+* Understand the core concepts of Helm
+* Understand the advantages of deployment using Helm over Kubernetes directly, looking at:
+  * Application management
+  * Updates
+  * Configuration
+  * Revision management
+  * Repositories and chart sharing
 
-Helm charts can be available on a remote repository or in a local environment/repository. The remote repositories can be public like [Helm Charts](https://github.com/helm/charts) or [IBM Helm Charts](https://github.com/IBM/charts), or hosted repositories like on Google Cloud Storage or GitHub. Refer to [Helm Chart Repository Guide](https://github.com/helm/helm/blob/master/docs/chart_repository.md) for more details. 
+# Prerequisites
 
-In this part of the lab, we show you how to install the `guestbook` chart from the [Helm101 repo](https://ibm.github.io/helm101/).
+* Have a running Kubernetes cluster. See the [IBM Cloud Kubernetes Service](https://cloud.ibm.com/docs/containers/cs_tutorials.html#cs_cluster_tutorial) or [Kubernetes Getting Started Guide](https://kubernetes.io/docs/setup/) for details about creating a cluster.
+* Have Helm installed and initialized with the Kubernetes cluster. See [Installing Helm on IBM Cloud Kubernetes Service](Lab0/README.md) or the [Helm Quickstart Guide](https://docs.helm.sh/using_helm/#quickstart) for getting started with Helm.
 
-1. Check the repositories configured on your system:
+# Helm Overview
 
-   ```$ helm repo list```
-   
-   The output should be similar to the following:
-   
-   ```console
-   Error: no repositories to show
-   ```
-   
-   Note: No Helm charts repository is installed by default with Helm v3.1.
+Helm is a tool that streamlines installation and management of Kubernetes applications. It uses a packaging format called "charts", which are a collection of files that describe Kubernetes resources. It can run anywhere (laptop, CI/CD, etc.) and is available for various operating systems, like OSX, Linux and Windows.
 
-2. Add `helm101` repo:
+![helm-architecture](images/helm-architecture.png)
 
-   ```$ helm repo add helm101 https://ibm.github.io/helm101/```
-   
-   Should generate an output as follows:
-   
-   ```"helmm101" has been added to your repositories```
-   
-   You can also search your repositories for charts by running the following command, ```$ helm search repo helm101```:
-   
-   ```console
-   NAME             	CHART VERSION	APP VERSION	DESCRIPTION                                                 
-   helm101/guestbook	0.1.0        	           	A Helm chart to deploy Guestbook three tier web application.
-   ```
-      
-3. Install the chart
+It has a client-server architecture with the client called `helm` and the server called `Tiller`. The client is a CLI which users interact with to perform different operations like install/upgrade/delete etc. The client interacts with Tiller and the chart repository. Tiller interacts with the Kubernetes API server. It renders Helm template files into Kubernetes manifest files which it uses to perform operations on the Kubernetes cluster via the Kubernetes API. See the [Helm Architecture](https://docs.helm.sh/architecture/) for more details. 
 
-   As mentioned we are going to install the `guestbook` chart from the [Helm101 repo](https://ibm.github.io/helm101/). As the repo is installed in our local respoitory we can reference the chart using the `repo name/chart name`, in other words `helm101/guestbook`. This means we can install the chart like we did previously with the command:
+A [chart](https://docs.helm.sh/developing_charts) is organized as a collection of files inside of a directory where the directory name is the name of the chart. It contains template YAML files which facilitates providing configuration values at runtime and eliminates the need of modifying YAML files. These templates provide programming logic as they are based on the [Go template language](https://golang.org/pkg/text/template/), functions from the [Sprig lib](https://github.com/Masterminds/sprig) and other [specialized functions](https://docs.helm.sh/developing_charts/#chart-development-tips-and-tricks).
 
-   ```$ helm install guestbook-demo-repo helm101/guestbook --namespace repo-demo```
-   
-   The output should be similar to the following:
-   
-   ```console
-   NAME: guestbook-demo-repo
-   LAST DEPLOYED: Wed Feb 19 18:38:35 2020
-   NAMESPACE: repo-demo
-   STATUS: deployed
-   REVISION: 1
-   TEST SUITE: None
-   NOTES:
-   1. Get the application URL by running these commands:
-     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get svc -w guestbook-demo-repo --namespace repo-demo'
-     export SERVICE_IP=$(kubectl get svc --namespace repo-demo guestbook-demo-repo -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-     echo http://$SERVICE_IP:3000
-   ```
-   
-4. Verify the new release
+The chart repository is a location where packaged charts can be stored and shared. This is akin to the image repository in Docker. Refer to [The Chart Repository Guide](https://github.com/helm/helm/blob/master/docs/chart_repository.md) for more details.
 
-   To check the new release, you can run
+# Helm Abstractions
 
-   ```
-   $ kubectl get all --namespace repo-demo
-   ```
+Helm terms :
+* Chart - It contains all of the resource definitions necessary to run an application, tool, or service inside of a Kubernetes cluster. A chart is basically a package of pre-configured Kubernetes resources.
+* Config - Contains configuration information that can be merged into a packaged chart to create a releasable object.
+* helm - Helm client. Communicates to Tiller through the Helm API - [HAPI](https://docs.helm.sh/developers/#the-helm-api-hapi) which uses [gRPC](https://grpc.io/).
+* Release - An instance of a chart running in a Kubernetes cluster.
+* Repository - Place where charts reside and can be shared with others.
+* Tiller - Helm server. It interacts directly with the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/) server to install, upgrade, query, and remove Kubernetes resources.
 
-   The command should returns
-
-   ```console
-   NAME                                       READY   STATUS             RESTARTS   AGE
-   pod/guestbook-demo-repo-7c65cfd8d6-2z7qc   1/1     Running            0          4m41s
-   pod/guestbook-demo-repo-7c65cfd8d6-9b96v   1/1     Running            0          4m41s
-   pod/redis-master-65b496655c-v7fbw          1/1     Running            0          4m41s
-   pod/redis-slave-775f8c567f-6rb8b           0/1     ImagePullBackOff   0          4m41s
-   pod/redis-slave-775f8c567f-m9zcz           0/1     ImagePullBackOff   0          4m41s
-
-   NAME                          TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)          AGE
-   service/guestbook-demo-repo   LoadBalancer   172.21.245.164   169.46.44.178   3000:32674/TCP   4m41s
-   service/redis-master          ClusterIP      172.21.22.93     <none>          6379/TCP         4m41s
-   service/redis-slave           ClusterIP      172.21.21.52     <none>          6379/TCP         4m41s
-
-   NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
-   deployment.apps/guestbook-demo-repo   2/2     2            2           4m41s
-   deployment.apps/redis-master          1/1     1            1           4m41s
-   deployment.apps/redis-slave           0/2     2            0           4m41s
-
-   NAME                                             DESIRED   CURRENT   READY   AGE
-   replicaset.apps/guestbook-demo-repo-7c65cfd8d6   2         2         2       4m41s
-   replicaset.apps/redis-master-65b496655c          1         1         1       4m41s
-   replicaset.apps/redis-slave-775f8c567f           2         2         0       4m41s
-   ```
-
-# Conclusion
-
-This lab provided you with a brief introduction to the Helm repositories to show how charts can be installed. The ability to share your chart means ease of use to both you and your consumers.
+To get started, head on over to [Lab 1](Lab1/README.md). 
