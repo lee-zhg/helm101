@@ -12,6 +12,12 @@ It seems contrived but the goal of this lab is to show you how to update your ap
 
 In this part of the lab we will update the previously deployed application [Guestbook](https://github.com/IBM/guestbook), using Kubernetes directly.
 
+1. Navigate to the right folder.
+
+  ```
+  $ cd ~/guestbook/v1
+  ```
+
 1. This is an optional step, that it is not necessary to update your running app. The reason for doing this step is "house keeping" - you want to have the correct files for the current configuration that you have deployed. This avoids making mistakes if you have future updates or even rollbacks. In this updated configuration, we remove the Redis slaves. That is why you should move/archive or remove the Redis slave files to keep abreast of the update:
 
    ```
@@ -19,7 +25,7 @@ In this part of the lab we will update the previously deployed application [Gues
    redis-slave-deployment.yaml
    ```
 
-2. Delete the Redis slave service and pods:
+1. Delete the Redis slave service and pods:
 
    ```console
    $ kubectl delete svc redis-slave --namespace default
@@ -28,7 +34,7 @@ In this part of the lab we will update the previously deployed application [Gues
    deployment.extensions "redis-slave" deleted
    ```
 
-3. Update the guestbook service from `LoadBalancer` to `NodePort` type:
+1. Update the guestbook service from `LoadBalancer` to `NodePort` type:
 
    ```console
    $ sed -i.bak 's/LoadBalancer/NodePort/g' guestbook-service.yaml
@@ -36,19 +42,19 @@ In this part of the lab we will update the previously deployed application [Gues
 
    Note: Like in Step 1, you may want to archive before making the changes.
    
-4. Delete the guestbook service:
+1. Delete the guestbook service:
     
     ```console
     $ kubectl delete svc guestbook --namespace default
     ```
     
-5. Re-create the service with `NodePort` type:
+1. Re-create the service with `NodePort` type:
 
     ```console
     $ kubectl create -f guestbook-service.yaml
     ```
     
-6. To check the updates, you can run ```$ kubectl get all --namespace default```:
+1. To check the updates, you can run ```$ kubectl get all --namespace default```:
     
     ```console
     NAME                                READY     STATUS    RESTARTS   AGE
@@ -73,8 +79,9 @@ In this part of the lab we will update the previously deployed application [Gues
     Note: The service type has changed (to `NodePort`) and a new port has been allocated (`31989` in this output case) to the guestbook 
     service. All `redis-slave` resources have been removed.
 
-5. View the guestbook as per [Lab1](../Lab1/README.md), using the updated port for the guestbook service.
-   
+1. View the guestbook as per [Lab1](../Lab1/README.md), using the updated port for the guestbook service.
+
+
 # Update the application using Helm
 
 In this section, we'll update the previously deployed `guestbook-demo` application by using Helm.
@@ -105,6 +112,12 @@ spec:
 ```
 
 Enough talking about the theory. Now let's give it a go!
+
+1. Navigate to the right folder.
+
+  ```
+  $ cd ~/helm101/charts
+  ```
 
 1. Update the application:
 
@@ -151,7 +164,7 @@ Enough talking about the theory. Now let's give it a go!
     ```
     Note: The service type has changed (to `NodePort`) and a new port has been allocated (`31202` in this output case) to the guestbook service. All `redis-slave` resources have been removed.
     
-2. View the guestbook as per [Lab1](../Lab1/README.md), using the updated port for the guestbook service.
+1. View the guestbook as per [Lab1](../Lab1/README.md), using the updated port for the guestbook service.
 
 # Conclusion
 
