@@ -14,9 +14,9 @@ In this part of the lab we will update the previously deployed application [Gues
 
 1. Navigate to the right folder.
 
-  ```
-  $ cd ~/guestbook/v1
-  ```
+   ```
+   $ cd ~/guestbook/v1
+   ```
 
 1. This is an optional step, that it is not necessary to update your running app. The reason for doing this step is "house keeping" - you want to have the correct files for the current configuration that you have deployed. This avoids making mistakes if you have future updates or even rollbacks. In this updated configuration, we remove the Redis slaves. That is why you should move/archive or remove the Redis slave files to keep abreast of the update:
 
