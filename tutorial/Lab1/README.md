@@ -109,7 +109,7 @@ Let's go ahead and install the chart now.
 
 1. Install the app as a Helm chart:
 
-    ```$ helm install guestbook-demo ./guestbook/ --namespace helm-demo```
+   ```$ helm install guestbook-demo ./guestbook/ --namespace helm-demo```
     
     Note: `$ helm install` command will create the `helm-demo` namespace if it does not exist.
     
@@ -161,7 +161,7 @@ Let's go ahead and install the chart now.
     redis-slave      ClusterIP      172.21.176.148   <none>        6379/TCP         50m
     ```
     
-1  . View the guestbook:
+1. View the guestbook:
 
    You can now play with the guestbook that you just created by opening it in a browser (it might take a few moments for the guestbook to come up).
 
