@@ -107,6 +107,12 @@ Let's go ahead and install the chart now.
    $ cd helm101/charts
    ```
 
+1. Create new name space in Kubernetes cluster
+
+   ```
+   kubectl create namespace helm-demo
+   ```
+
 1. Install the app as a Helm chart:
 
    ```$ helm install guestbook-demo ./guestbook/ --namespace helm-demo```
