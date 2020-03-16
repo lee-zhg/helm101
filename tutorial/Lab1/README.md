@@ -11,7 +11,11 @@ In this part of the lab, we will deploy the application using the Kubernetes cli
 
 1. Use the configuration files in the cloned Git repository to deploy the containers and create services for them by using the following commands:
 
-   ```console
+   ```
+   $ cd ~
+
+   $ git clone https://github.com/IBM/guestbook.git
+
    $ cd guestbook/v1
 
    $ kubectl create -f redis-master-deployment.yaml
@@ -92,6 +96,16 @@ A chart is defined as a collection of files that describe a related set of Kuber
 Note: The template files shown above will be rendered into Kubernetes manifest files by Tiller before being passed to the Kubernetes API server. Therefore, they map to the manifest files that we deployed when we used `kubectl` (minus the helper and notes files). 
 
 Let's go ahead and install the chart now.
+
+1. Clone the repo
+
+   ```
+   $ cd ~
+
+   $ git clone https://github.com/IBM/helm101
+
+   $ cd helm101/charts
+   ```
 
 1. Install the app as a Helm chart:
 
