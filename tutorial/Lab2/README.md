@@ -115,9 +115,9 @@ Enough talking about the theory. Now let's give it a go!
 
 1. Navigate to the right folder.
 
-  ```
-  $ cd ~/helm101/charts
-  ```
+   ```
+   $ cd ~/helm101/charts
+   ```
 
 1. Update the application:
 
