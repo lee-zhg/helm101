@@ -162,11 +162,13 @@ Let's go ahead and install the chart now.
     
     ```console
     NAME             TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
-    guestbook-demo   LoadBalancer   172.21.43.244    <pending>     3000:31367/TCP   50m
-    redis-master     ClusterIP      172.21.12.43     <none>        6379/TCP         50m
-    redis-slave      ClusterIP      172.21.176.148   <none>        6379/TCP         50m
+    guestbook-demo   LoadBalancer   172.21.83.245   169.47.74.77   3000:31687/TCP   60s
+    redis-master     ClusterIP      172.21.92.122   <none>         6379/TCP         60s
+    redis-slave      ClusterIP      172.21.246.50   <none>         6379/TCP         60s
     ```
-    
+
+   > Note: Take note of the `EXTERNAL-IP` and `PORT(S)`. In this example, you have `169.47.74.77` and `31687`. You need both in the next step to view the sample application.
+
 1. View the guestbook:
 
    You can now play with the guestbook that you just created by opening it in a browser (it might take a few moments for the guestbook to come up).
@@ -175,17 +177,13 @@ Let's go ahead and install the chart now.
     If you are running Kubernetes locally, view the guestbook by navigating to `http://localhost:3000` in your browser.
 
  * **Remote Host:**
-    1. To view the guestbook on a remote host, locate the external IP and the port of the load balancer by following the "NOTES" section in the install output. The commands will be similar to the following:
+    1. To view the guestbook on a remote host, locate the external IP and the port of the load balancer. You have executed the command `kubectl get services --namespace helm-demo`  in the previous step. For example,
     
        ```console
-       $ export SERVICE_IP=$(kubectl get svc --namespace helm-demo guestbook-demo -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-       $ echo http://$SERVICE_IP:331367
-       http://50.23.5.136:31367
+       http://169.47.74.77:31687
        ```
 
-       In this scenario the URL is `http://50.23.5.136:31367`.
-       
-       Note: If no external IP is assigned, then you can get the external IP with the following command:
+       Note: If no external IP is assigned, then you can instead use the external IP of a worker node. The following command retrieves workder nodes information.
 
        ```console
        $ kubectl get nodes -o wide
@@ -193,9 +191,9 @@ Let's go ahead and install the chart now.
        10.47.122.98   Ready     <none>    1h        v1.10.11+IKS   173.193.92.112   Ubuntu 16.04.5 LTS   4.4.0-141-generic   docker://18.6.1
        ```
 
-       In this scenario the URL is `http://173.193.92.112:31838`.
+       Accessing the sample application by combining the external-IP of worker node and port number from the previous step. For example, `http://173.193.92.112:31687`.
  
-    2. Navigate to the output given (for example `http://50.23.5.136:31367`) in your browser. You should see the guestbook now displaying in your browser:
+    2. Navigate to the output given (for example `http://169.47.74.77:31687`) in your browser. You should see the guestbook now displaying in your browser:
 
        ![Guestbook](../images/guestbook-page.png)
 
